@@ -1,40 +1,44 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './Login';
 import axios from 'axios';
-
+import Nabvar from './Nabvar';
+import Reporteria from './Reporteria';
 const App = () => {
   const [token, setToken] = useState(null);
 
   const handleLogout = () => {
     setToken(null);
   };
+const ContentProtegido = () => (
+  <div>
+    <Nabvar handleLogout={handleLogout} />
+    <Routes>
+      <Route path="/" element={<Navigate to="/App" />} />
+      <Route path="/App" element={<h1>Bienvenido a plataforma</h1>} />
+      <Route path="/Reporteria" element={<Reporteria />} />
+      
+    </Routes>
+  </div>
+);
 
-  const handleProtectedRequest = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/protected', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error making protected request:', error);
-    }
-  };
+
+
+  // ... (your other functions)
 
   return (
-    <div className="App container">
-      {token ? (
-        <div>
-          <h1>Contenido Protegido</h1>
-          <button onClick={handleLogout}>Logout</button>
-          <br />
-          <button onClick={handleProtectedRequest}>Hacer solicitud protegida</button>
-        </div>
-      ) : (
-        <Login setToken={setToken} />
-      )}
-    </div>
+    <Router>
+      <div className="App container">
+        {token ? (
+          <div>
+            <ContentProtegido />
+            
+          </div>
+        ) : (
+          <Login setToken={setToken} />
+        )}
+      </div>
+    </Router>
   );
 };
 
